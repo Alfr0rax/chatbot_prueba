@@ -61,6 +61,7 @@ let getWebhook = (req, res) => {
     }    
 };
 
+/*
 //resolver los eventos de los mensajes
 function handleMessage(sender_psid, received_message) {
 
@@ -106,6 +107,7 @@ function handleMessage(sender_psid, received_message) {
     // Envía el mensaje de respuesta
     callSendAPI(sender_psid, response);    
   }
+*/
 
 //Resolver los eventos de la devolucion de mensajeria
 function handlePostback(sender_psid, received_postback){
@@ -149,6 +151,20 @@ function callSendAPI(sender_psid, response) {
         console.error("No se puede enviar el mensaje:" + err);
       }
     }); 
+}
+
+function firstTrait(nlp, name) {
+    return nlp && nlp.entities && nlp.traits[name] && nlp.traits[name][0];
+  }
+  
+  function handleMessage(sender_psid, message) {
+    // check greeting is here and is confident
+    const greeting = firstTrait(message.nlp, 'wit$greetings');
+    if (greeting && greeting.confidence > 0.8) {
+        callSendAPI(sender_psid,'Hola!');
+    } else { 
+      // default logic
+    }
   }
 
 
