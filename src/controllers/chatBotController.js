@@ -82,14 +82,14 @@ function handleMessage(sender_psid, received_message) {
               "payload": {
                 "template_type": "generic",
                 "elements": [{
-                  "title": "Is this the right picture?",
-                  "subtitle": "Tap a button to answer.",
+                  "title": "¿Es esta la imagen correcta?",
+                  "subtitle": "Toca un botón para responder.",
                   "image_url": attachment_url,
                   "buttons": [
                     {
                       "type": "postback",
-                      "title": "Yes!",
-                      "payload": "yes",
+                      "title": "Si!",
+                      "payload": "si",
                     },
                     {
                       "type": "postback",
@@ -109,7 +109,19 @@ function handleMessage(sender_psid, received_message) {
 
 //Resolver los eventos de la devolucion de mensajeria
 function handlePostback(sender_psid, received_postback){
+    let response;
+  
+    // Obtener la carga útil para la devolución de datos
+    let payload = received_postback.payload;
 
+    // Establecer la respuesta en función de la carga de devolución de datos
+    if (payload === 'si') {
+        response = { "text": "Gracias!" }
+    } else if (payload === 'no') {
+        response = { "text": "Rayos, intenta enviar otra imagen." }
+    }
+    // Enviar el mensaje para reconocer la devolución de datos
+    callSendAPI(sender_psid, response);
 }
 
 //Enviar mensajes de respuesta atraves de la API
