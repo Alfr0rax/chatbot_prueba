@@ -73,7 +73,35 @@ function handleMessage(sender_psid, received_message) {
       response = {
         "text": `Tu enviaste el mensaje: "${received_message.text}". Ahora mandame una imagen!`
       }
-    }  
+    }else if (received_message.attachments) {  
+        // Obtiene la URL del archivo adjunto del mensaje
+        let attachment_url = received_message.attachments[0].payload.url;      
+        response = {
+            "attachment": {
+              "type": "template",
+              "payload": {
+                "template_type": "generic",
+                "elements": [{
+                  "title": "Is this the right picture?",
+                  "subtitle": "Tap a button to answer.",
+                  "image_url": attachment_url,
+                  "buttons": [
+                    {
+                      "type": "postback",
+                      "title": "Yes!",
+                      "payload": "yes",
+                    },
+                    {
+                      "type": "postback",
+                      "title": "No!",
+                      "payload": "no",
+                    }
+                  ],
+                }]
+              }
+            }
+          }
+    } 
     
     // Envía el mensaje de respuesta
     callSendAPI(sender_psid, response);    
