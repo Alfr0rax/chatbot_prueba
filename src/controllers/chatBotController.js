@@ -61,7 +61,6 @@ let getWebhook = (req, res) => {
     }    
 };
 
-/*
 //resolver los eventos de los mensajes
 function handleMessage(sender_psid, received_message) {
 
@@ -107,7 +106,6 @@ function handleMessage(sender_psid, received_message) {
     // Envía el mensaje de respuesta
     callSendAPI(sender_psid, response);    
   }
-*/
 
 //Resolver los eventos de la devolucion de mensajeria
 function handlePostback(sender_psid, received_postback){
@@ -120,7 +118,7 @@ function handlePostback(sender_psid, received_postback){
     if (payload === 'si') {
         response = { "text": "Gracias!" }
     } else if (payload === 'no') {
-        response = { "text": "Rayos, intenta enviar otra imagen." }
+        response = { "text": "Oppss, intenta enviar otra imagen." }
     }
     // Enviar el mensaje para reconocer la devolución de datos
     callSendAPI(sender_psid, response);
@@ -134,7 +132,7 @@ function callSendAPI(sender_psid, response) {
       "recipient": {
         "id": sender_psid
       },
-      "message": {"text" : response}
+      "message": response
     };
   
     //Envía la solicitud HTTP a la Plataforma de Messenger
@@ -151,21 +149,6 @@ function callSendAPI(sender_psid, response) {
         console.error("No se puede enviar el mensaje:" + err);
       }
     }); 
-}
-
-function firstTrait(nlp, name) {
-    return nlp && nlp.entities && nlp.traits[name] && nlp.traits[name][0];
-  }
-  
-  function handleMessage(sender_psid, message) {
-    // check greeting is here and is confident
-    const greeting = firstTrait(message.nlp, 'wit$greetings');
-    if (greeting && greeting.confidence > 0.8) {
-        callSendAPI(sender_psid,'Hola!');
-    } else { 
-      // default logic
-      callSendAPI(sender_psid,'default!');
-    }
   }
 
 
