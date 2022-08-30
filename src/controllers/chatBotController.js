@@ -10,18 +10,19 @@ let postWebhook = (req, res) => {
         // Iterates over each entry there may be multiple if batched 
         body.entry.forEach(function(entry) {
 
-            // Gets the message. entry.messaging is an array, but 
-            // will only ever contain one message, so we get index 0
-
-            let webhook_event = entry.messaging[0];
+            // Gets the body of the webhook event 
+            let webhook_event = entry.messaging[0]; 
             console.log(webhook_event);
+
+            // Get the sender PSID
+            let sender_psid = webhook_event.sender.id; 
+            console.log('Sender PSID: ' + sender_psid);
         });
 
         // Returns a '200 OK" response to all requests 
         res.status(200).send('EVENT_RECEIVED');
 
     } else {
-
         // Returns a 404 Not Found' if event is not from a page subscription 
         res.sendStatus(404);
     }
@@ -50,6 +51,23 @@ let getWebhook = (req, res) => {
         }    
     }    
 };
+
+//resolver los eventos de los mensajes
+function handleMessage(sender_psid, received_message){
+
+}
+
+//Resolver los eventos de la devolucion de mensajeria
+function handlePostback(sender_psid, received_postback){
+
+}
+
+//Enviar mensajes de respuesta atraves de la API
+
+function callSendAPI(sender_psid, response){
+
+}
+
 
 module.exports = {
     postWebhook : postWebhook,
