@@ -1,29 +1,38 @@
 require("dotenv").config();
+import request from "request";
 
 let postWebhook = (req, res) => {
     let body = req.body;    
 
-    // Checks this is an event from a page subscription
+    // Comprueba que este es un evento de una suscripción de página
 
     if (body.object === 'page') {
 
-        // Iterates over each entry there may be multiple if batched 
+        //Itera sobre cada entrada, puede haber múltiples si se procesan por lotes
         body.entry.forEach(function(entry) {
 
-            // Gets the body of the webhook event 
-            let webhook_event = entry.messaging[0]; 
+            // Obtiene el cuerpo del evento webhook
+            let webhook_event = entry.messaging[0];
             console.log(webhook_event);
 
-            // Get the sender PSID
-            let sender_psid = webhook_event.sender.id; 
+            // Obtienes el sender PSID
+            let sender_psid = webhook_event.sender.id;
             console.log('Sender PSID: ' + sender_psid);
+
+            // Comprobar si el evento es un mensaje o una devolución de datos y
+            // pasar el evento a la función del controlador apropiado
+            if (webhook_event.message) {
+                handleMessage(sender_psid, webhook_event.message);        
+            } else if (webhook_event.postback) {
+                handlePostback(sender_psid, webhook_event.postback);
+            }
         });
 
-        // Returns a '200 OK" response to all requests 
+        // Devuelve una respuesta "200 OK" a todas las solicitudes
         res.status(200).send('EVENT_RECEIVED');
 
     } else {
-        // Returns a 404 Not Found' if event is not from a page subscription 
+        // Devuelve un 404 No encontrado' si el evento no es de una suscripción de página
         res.sendStatus(404);
     }
 
@@ -53,9 +62,22 @@ let getWebhook = (req, res) => {
 };
 
 //resolver los eventos de los mensajes
-function handleMessage(sender_psid, received_message){
+function handleMessage(sender_psid, received_message) {
 
-}
+    let response;
+  
+    // Comprueba si el mensaje contiene texto
+    if (received_message.text) {    
+  
+      // Crear la carga útil para un mensaje de texto básico
+      response = {
+        "text": `Tu enviaste el mensaje: "${received_message.text}". Ahora mandame una imagen!`
+      }
+    }  
+    
+    // Envía el mensaje de respuesta
+    callSendAPI(sender_psid, response);    
+  }
 
 //Resolver los eventos de la devolucion de mensajeria
 function handlePostback(sender_psid, received_postback){
@@ -64,9 +86,30 @@ function handlePostback(sender_psid, received_postback){
 
 //Enviar mensajes de respuesta atraves de la API
 
-function callSendAPI(sender_psid, response){
-
-}
+function callSendAPI(sender_psid, response) {
+    //Construir el cuerpo del mensaje
+    let request_body = {
+      "recipient": {
+        "id": sender_psid
+      },
+      "message": response
+    };
+  
+    //Envía la solicitud HTTP a la Plataforma de Messenger
+    request({
+      "uri": "https://graph.facebook.com/v6.0/me/messages",
+      "qs": { "access_token": process.env.FB_PAGE_TOKEN},
+      "method": "POST",
+      "json": request_body
+    }, (err, res, body) => {
+      if (!err) {
+        console.log('Mensaje Enviado!')
+        console.log(`Mi mensaje: ${response}`);
+      } else {
+        console.error("No se puede enviar el mensaje:" + err);
+      }
+    }); 
+  }
 
 
 module.exports = {
