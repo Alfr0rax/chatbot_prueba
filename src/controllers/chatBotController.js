@@ -39,23 +39,23 @@ let postWebhook = (req, res) => {
 };
 
 let getWebhook = (req, res) => {
-    // Your verify token. Should be a random string. 
+    // Su token de verificación. Debería ser una cadena aleatoria.
     let VERIFY_TOKEN= process.env.TOKEN_VERIFICACION;
 
-    // Parse the query params
+    // Analizar los parámetros de consulta
     let mode = req.query['hub.mode'];
     let token = req.query['hub.verify_token'];
     let challenge = req.query['hub.challenge'];
 
-    // Checks if a token and mode is in the query string of the request 
+    // Comprueba si hay un token y un modo en la cadena de consulta de la solicitud 
     if (mode && token) {
-        // Checks the mode and token sent is correct 
+        // Comprueba que el modo y el token enviado es correcto 
         if (mode === 'subscribe' && token === VERIFY_TOKEN){
-            //Responds with the challenge token from the request 
+            //Responde con el token de desafío de la solicitud
             console.log("WEBHOOK_VERIFIED");
             res.status(200).send(challenge);
         }else{
-            // Responds with '403 Forbidden' if verify tokens do not match
+            // Responde con '403 Prohibido' si los tokens de verificación no coinciden
             res.sendStatus(403); 
         }    
     }    
@@ -125,7 +125,6 @@ function handlePostback(sender_psid, received_postback){
 }
 
 //Enviar mensajes de respuesta atraves de la API
-
 function callSendAPI(sender_psid, response) {
     //Construir el cuerpo del mensaje
     let request_body = {
