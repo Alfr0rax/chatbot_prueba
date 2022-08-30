@@ -164,6 +164,7 @@ function firstTrait(nlp, name) {
         callSendAPI(sender_psid,'Hola!');
     } else { 
       // default logic
+      callSendAPI(sender_psid,'default!');
     }
   }
 
